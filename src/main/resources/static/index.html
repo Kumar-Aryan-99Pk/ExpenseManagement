@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Manager</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --input-bg: #1e293b;
+            --glow: radial-gradient(circle at 50% -20%, #3b82f6 0%, rgba(0,0,0,0) 40%);
+        }
+
+        /* ===== GLOBAL RESET ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            background-image: var(--glow);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #ffffff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 10px;
+        }
+
+        /* ===== FORMS & INPUTS ===== */
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: #475569;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background: #25334d;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-get {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, var(--accent-yellow), #d97706);
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, var(--accent-red), #b91c1c);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* ===== TABLE ===== */
+        #tableContainer {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px; /* Creates space between rows */
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        tr.data-row {
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.2s;
+        }
+
+        tr.data-row:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: scale(1.01);
+        }
+
+        td {
+            padding: 16px 20px;
+            color: var(--text-main);
+            border: none;
+        }
+
+        td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+
+        td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            font-weight: 500;
+            color: var(--accent-green);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+            border: 2px dashed var(--card-border);
+            border-radius: 12px;
+        }
+
+        /* ===== ANIMATION ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .container { padding: 0; }
+            h1 { font-size: 1.8rem; }
+            .card { padding: 20px; }
+            .row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Expense Manager</h1>
+
+    <div class="card">
+        <h2>Add New Expense</h2>
+        <div class="row">
+            <input type="text" id="desc" placeholder="e.g. Starbucks Coffee">
+            <input type="number" id="amount" placeholder="Amount (₹)">
+            <button class="btn btn-add" onclick="addExpense()">+ Add Expense</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Manage Existing</h2>
+        <div class="row">
+            <input type="number" id="id" placeholder="ID to Update/Delete">
+            <input type="text" id="desc2" placeholder="New Description">
+            <input type="number" id="amount2" placeholder="New Amount">
+        </div>
+        <div class="row">
+            <button class="btn btn-update" onclick="updateExpense()">Update Details</button>
+            <button class="btn btn-delete" onclick="deleteExpense()">Delete Record</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>History</h2>
+        <button class="btn btn-get" onclick="getExpenses()">↻ Refresh Expenses</button>
+        <div id="tableContainer">
+            <div class="empty">Click "Refresh Expenses" to load data</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "/expenses";
+
+    function addExpense() {
+        if(!desc.value || !amount.value) {
+            alert("Please fill in both fields");
+            return;
+        }
+
+        const btn = document.querySelector('.btn-add');
+        const originalText = btn.innerText;
+        btn.innerText = "Adding...";
+
+        fetch(API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                description: desc.value,
+                amount: amount.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            // alert("Expense added successfully"); // Optional: Removed annoying alert
+            desc.value = "";
+            amount.value = "";
+            getExpenses();
+        })
+        .catch(err => alert("Error adding expense"))
+        .finally(() => btn.innerText = originalText);
+    }
+
+    function getExpenses() {
+        const tableContainer = document.getElementById('tableContainer');
+        tableContainer.innerHTML = '<div class="empty" style="border:none">Loading...</div>';
+
+        fetch(API)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    tableContainer.innerHTML =
+                        `<div class="empty">No expenses found</div>`;
+                    return;
+                }
+
+                let table = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                data.forEach(exp => {
+                    // Added class 'data-row' for CSS styling
+                    table += `
+                        <tr class="data-row">
+                            <td>#${exp.id}</td>
+                            <td>${exp.description}</td>
+                            <td>₹ ${exp.amount}</td>
+                        </tr>
+                    `;
+                });
+
+                table += `</tbody></table>`;
+                tableContainer.innerHTML = table;
+            })
+            .catch(err => {
+                tableContainer.innerHTML = `<div class="empty" style="color:var(--accent-red)">Failed to fetch data</div>`;
+            });
+    }
+
+    function updateExpense() {
+        if(!id.value) return alert("Please provide an ID");
+
+        fetch(`${API}/${id.value}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                description: desc2.value,
+                amount: amount2.value
+            })
+        })
+        .then(res => res.text())
+        .then(msg => {
+            alert(msg);
+            getExpenses();
+        });
+    }
+
+    function deleteExpense() {
+        if(!id.value) return alert("Please provide an ID");
+
+        if(!confirm("Are you sure you want to delete this expense?")) return;
+
+        fetch(`${API}/${id.value}`, {
+            method: "DELETE"
+        })
+        .then(res => res.text())
+        .then(msg => {
+            // alert(msg);
+            getExpenses();
+            id.value = "";
+        });
+    }
+</script>
+
+</body>
+</html>
